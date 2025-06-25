@@ -13,20 +13,17 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.storage.local.set({ userEmail: userEmailInput.value });
   });
 
-  findEmailBtn.addEventListener('click', async function() {
-    const userEmail = userEmailInput.value;
-    if (!userEmail || !isValidEmail(userEmail)) {
-      showStatus('Please enter a valid email address', 'error');
-      return;
-    }
-    showStatus('Searching for privacy emails...', 'info');
-    try {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      const results = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: findPrivacyEmails
-      });
-      const emails = results[0].result;
+findEmailBtn.addEventListener('click', async function() {
+  const userEmail = userEmailInput.value;
+  if (!userEmail || !isValidEmail(userEmail)) {
+    showStatus('Please enter a valid email address', 'error');
+    return;
+  }
+  showStatus('Searching for privacy emails...', 'info');
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    chrome.tabs.sendMessage(tab.id, { action: 'findEmails' }, function(response) {
+      const emails = response && response.emails ? response.emails : [];
       if (emails.length === 0) {
         showStatus('No privacy-related emails found on this page', 'error');
         return;
@@ -37,10 +34,11 @@ document.addEventListener('DOMContentLoaded', function() {
       const mailtoLink = `mailto:${privacyEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.open(mailtoLink);
       showStatus(`Email opened for: ${privacyEmail}`, 'success');
-    } catch (error) {
-      showStatus('Error: ' + error.message, 'error');
-    }
-  });
+    });
+  } catch (error) {
+    showStatus('Error: ' + error.message, 'error');
+  }
+});
 
   function showStatus(message, type) {
     statusDiv.textContent = message;
