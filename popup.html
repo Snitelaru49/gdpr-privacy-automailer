@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>GDPR Auto Mailer</title>
+  <style>
+    body { width: 320px; padding: 16px; font-family: Arial, sans-serif; }
+    .header { text-align: center; margin-bottom: 16px; }
+    .email-input { width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 4px; }
+    .btn { width: 100%; padding: 10px; background: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 8px; }
+    .btn:hover { background: #3367d6; }
+    .status { padding: 8px; border-radius: 4px; margin-top: 8px; display: none; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .info { background: #cce5ff; color: #004085; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h3>🛡️ GDPR Auto Mailer</h3>
+  </div>
+  <input type="email" id="userEmail" class="email-input" placeholder="Your email address">
+  <button id="findEmailBtn" class="btn">🔍 Find Privacy Email & Send Request</button>
+  <button id="settingsBtn" class="btn" style="background: #6c757d;">⚙️ Settings</button>
+  <div id="status" class="status"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
