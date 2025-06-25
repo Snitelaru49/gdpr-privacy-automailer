@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 findEmailBtn.addEventListener('click', async function() {
   const userEmail = userEmailInput.value;
+  const emailListDiv = document.getElementById('emailList');
+  emailListDiv.innerHTML = '';
   if (!userEmail || !isValidEmail(userEmail)) {
     showStatus('Please enter a valid email address', 'error');
     return;
@@ -28,12 +30,23 @@ findEmailBtn.addEventListener('click', async function() {
         showStatus('No privacy-related emails found on this page', 'error');
         return;
       }
-      const privacyEmail = emails[0];
-      const subject = 'GDPR Data Deletion Request - Article 17';
-      const body = generateGDPRTemplate(userEmail, tab.url);
-      const mailtoLink = `mailto:${privacyEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.open(mailtoLink);
-      showStatus(`Email opened for: ${privacyEmail}`, 'success');
+      showStatus(`Found ${emails.length} email(s):`, 'success');
+      // Afișează lista de emailuri
+      const ul = document.createElement('ul');
+      emails.forEach(email => {
+        const li = document.createElement('li');
+        li.style.cursor = 'pointer';
+        li.style.color = '#4285f4';
+        li.textContent = email;
+        li.onclick = function() {
+          const subject = 'GDPR Data Deletion Request - Article 17';
+          const body = generateGDPRTemplate(userEmail, tab.url);
+          const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          window.open(mailtoLink);
+        };
+        ul.appendChild(li);
+      });
+      emailListDiv.appendChild(ul);
     });
   } catch (error) {
     showStatus('Error: ' + error.message, 'error');
