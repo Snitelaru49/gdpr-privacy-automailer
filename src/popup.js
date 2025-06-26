@@ -37,22 +37,51 @@ findEmailBtn.addEventListener('click', async function() {
         return;
       }
       showStatus(`Found ${emails.length} email(s):`, 'success');
-      // Afișează lista de emailuri
       const ul = document.createElement('ul');
-      emails.forEach(email => {
-        const li = document.createElement('li');
-        li.style.cursor = 'pointer';
-        li.style.color = '#4285f4';
-        li.textContent = email;
-        li.onclick = function() {
-          const subject = 'GDPR Data Deletion Request - Article 17';
-          const body = generateGDPRTemplate(userEmail, tab.url);
-          const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-          window.open(mailtoLink);
-        };
-        ul.appendChild(li);
+      // Fetch personal DB for comparison
+      chrome.storage.local.get(['customEmails'], function(result) {
+        const customEmails = result.customEmails || {};
+        emails.forEach(email => {
+          const li = document.createElement('li');
+          li.style.cursor = 'pointer';
+          li.style.color = '#4285f4';
+          li.textContent = email;
+
+          // Check if email is in knownEmails or customEmails
+          const isInGlobal = Object.values(knownEmails).includes(email);
+          const isInPersonal = Object.values(customEmails).includes(email);
+
+          if (!isInGlobal && !isInPersonal) {
+            // Add a button to save to personal DB
+            const addBtn = document.createElement('button');
+            addBtn.textContent = 'Add to My Emails';
+            addBtn.className = 'btn btn-green';
+            addBtn.style.marginLeft = '8px';
+            addBtn.onclick = function(e) {
+              e.stopPropagation();
+              // Save to personal DB for this domain
+              const domain = new URL(tab.url).hostname.replace(/^www\./, '');
+              chrome.storage.local.get(['customEmails'], function(res) {
+                const customEmails = res.customEmails || {};
+                customEmails[domain] = email;
+                chrome.storage.local.set({ customEmails }, function() {
+                  showStatus('Email added to your personal database.', 'success');
+                });
+              });
+            };
+            li.appendChild(addBtn);
+          }
+
+          li.onclick = function() {
+            const subject = 'GDPR Data Deletion Request - Article 17';
+            const body = generateGDPRTemplate(userEmail, tab.url);
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoLink);
+          };
+          ul.appendChild(li);
+        });
+        emailListDiv.appendChild(ul);
       });
-      emailListDiv.appendChild(ul);
     });
   } catch (error) {
     showStatus('Error: ' + error.message, 'error');
