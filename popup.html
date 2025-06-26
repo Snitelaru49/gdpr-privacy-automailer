@@ -4,31 +4,164 @@
   <meta charset="utf-8">
   <title>GDPR Auto Mailer</title>
   <style>
-    body { width: 320px; padding: 16px; font-family: Arial, sans-serif; }
+    body {
+      width: 320px;
+      min-width: 260px;
+      max-width: 400px;
+      padding: 16px;
+      font-family: Arial, sans-serif;
+    }
     .header { text-align: center; margin-bottom: 16px; }
     .email-input { width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 4px; }
-    .btn { width: 100%; padding: 10px; background: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 8px; }
-    .btn:hover { background: #3367d6; }
+    .btn {
+      width: 100%;
+      padding: 10px;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    }
+    .btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 1px 4px 0 rgba(60,60,60,0.10);
+    }
+    input:focus, .btn:focus {
+      outline: 2px solid #1976d2;
+      outline-offset: 2px;
+    }
+    @media (prefers-color-scheme: dark) {
+      input:focus, .btn:focus {
+        outline: 2px solid #2196f3;
+      }
+    }
+    .btn-primary { background: #1976d2; }
+    .btn-primary:hover { background: #1565c0; }
+    .btn-secondary { background: #757575; }
+    .btn-secondary:hover { background: #616161; }
+    .btn-teal { background: #009688; }
+    .btn-teal:hover { background: #00796b; }
+    .btn-green { background: #43a047; }
+    .btn-green:hover { background: #388e3c; }
+    .btn-danger { background: #e53935; }
+    .btn-danger:hover { background: #b71c1c; }
+    .btn-orange { background: #ff9800; }
+    .btn-orange:hover { background: #f57c00; }
     .status { padding: 8px; border-radius: 4px; margin-top: 8px; display: none; }
     .success { background: #d4edda; color: #155724; }
     .error { background: #f8d7da; color: #721c24; }
     .info { background: #cce5ff; color: #004085; }
+    .custom-email-block {
+      margin-top: 18px;
+      background: #f8f9fa;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 10px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .custom-email-block:hover {
+      box-shadow: 0 2px 8px 0 rgba(60,60,60,0.08);
+      border-color: #bdbdbd;
+    }
+    .custom-email-input { width: 100%; margin-bottom: 4px; }
+    .flex-container { display: flex; align-items: center; gap: 6px; margin-bottom: 0; }
+    .flex-container .btn { flex: 1; margin-bottom: 0; }
+    .suggest-checkbox { display: block; margin-top: 6px; }
+    .spinner {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      vertical-align: middle;
+    }
+    .spinner:after {
+      content: ' ';
+      display: block;
+      width: 18px;
+      height: 18px;
+      margin: 2px;
+      border-radius: 50%;
+      border: 3px solid #1976d2;
+      border-color: #1976d2 transparent #1976d2 transparent;
+      animation: spinner-anim 1.2s linear infinite;
+    }
+    @keyframes spinner-anim {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #181a1b; color: #f1f3f4; }
+      .header { color: #fff; }
+      .email-input, .custom-email-input {
+        background: #23272a !important;
+        color: #f1f3f4 !important;
+        border: 1px solid #555 !important;
+        box-shadow: 0 1px 2px #0003;
+        border-radius: 4px;
+      }
+      .email-input::placeholder, .custom-email-input::placeholder {
+        color: #b0b0b0 !important;
+        opacity: 1;
+      }
+      .btn { color: #fff; }
+      .btn-primary { background: #2196f3; }
+      .btn-primary:hover { background: #1565c0; }
+      .btn-secondary { background: #444; }
+      .btn-secondary:hover { background: #222; }
+      .btn-teal { background: #26a69a; }
+      .btn-teal:hover { background: #00796b; }
+      .btn-green { background: #66bb6a; }
+      .btn-green:hover { background: #388e3c; }
+      .btn-danger { background: #ef5350; }
+      .btn-danger:hover { background: #b71c1c; }
+      .btn-orange { background: #ffa726; }
+      .btn-orange:hover { background: #f57c00; }
+      .status.success { background: #27472f; color: #b9f6ca; }
+      .status.error { background: #5c1a1b; color: #ffbdbd; }
+      .status.info { background: #1a2634; color: #b3e5fc; }
+      .custom-email-block {
+        background: #23272a;
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 10px;
+        transition: box-shadow 0.2s, border-color 0.2s;
+      }
+      .custom-email-block:hover {
+        box-shadow: 0 2px 8px 0 rgba(0,0,0,0.25);
+        border-color: #444;
+      }
+      hr { border-top: 1px solid #333; }
+    }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h3>🛡️ GDPR Auto Mailer</h3>
-  </div>
+<div class="header">
+  <h3>
+    <img src="icons/icon48.png" alt="GDPR Auto Mailer Icon" style="height: 1.2em; vertical-align: middle; margin-right: 6px;">
+    GDPR Auto Mailer
+  </h3>
+</div>
   <input type="email" id="userEmail" class="email-input" placeholder="Your email address">
-  <button id="findEmailBtn" class="btn">🔍 Find Privacy Email & Send Request</button>
-  <button id="settingsBtn" class="btn" style="background: #6c757d;">⚙️ Settings</button>
-  <button id="dbSearchBtn" class="btn" style="background: #fbbc05;">🔎 Search in Known Database</button>
-  <button id="googleSearchBtn" class="btn" style="background: #34a853;">🔎 Google Search Emails</button>
-  <input type="email" id="customEmail" placeholder="Add privacy email for this site">
-  <label><input type="checkbox" id="suggestGlobal"> Suggest for global database</label>
-  <button id="addCustomEmailBtn">Add/Update Email</button>
-  <button id="removeCustomEmailBtn">Remove Email</button>
-  <div id="status" class="status"></div>
+  <button id="findEmailBtn" class="btn btn-primary">🔍 Find Privacy Email & Send Request</button>
+  <button id="dbSearchBtn" class="btn btn-teal">🔎 Search in Known Database</button>
+  <button id="googleSearchBtn" class="btn btn-orange">🔎 Google Search Emails</button>
+  <button id="settingsBtn" class="btn btn-secondary">⚙️ Settings</button>
+  <hr style="margin: 16px 0 10px 0; border: none; border-top: 1px solid #eee;">
+  <div class="custom-email-block" style="margin-top: 18px;">
+    <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 6px;">
+      Custom Email for This Site
+    </div>
+    <label for="customEmail" style="display:none;">Custom privacy email</label>
+    <input type="email" id="customEmail" class="custom-email-input" placeholder="Add privacy email for this site" aria-label="Custom privacy email">
+    <div class="flex-container">
+      <button id="addCustomEmailBtn" class="btn btn-green" title="Save or update your custom privacy email for this site" aria-label="Add or update custom privacy email">➕ Add/Update Email</button>
+      <button id="removeCustomEmailBtn" class="btn btn-danger" title="Remove your custom privacy email for this site" aria-label="Remove custom privacy email">🗑️ Remove Email</button>
+    </div>
+    <label class="suggest-checkbox">
+      <input type="checkbox" id="suggestGlobal"> Suggest for global database
+    </label>
+  </div>
+  <div id="status" class="status" style="min-height: 32px;"></div>
   <div id="emailList" style="margin-top:12px;"></div>
   <script src="src/popup.js"></script>
 </body>
