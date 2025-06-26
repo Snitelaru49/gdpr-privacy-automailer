@@ -24,7 +24,7 @@ A cross-browser extension (Chrome, Firefox, Edge, Brave, Opera) that helps users
 - HTML
 - Chrome Extension APIs
 - Local JSON database
-- Optional browser integration (mailto)
+- Optional browser integration 
 
 ---
 
@@ -66,14 +66,15 @@ This extension has been tested and works properly on:
 3. Enable **Developer Mode**
 4. Click **"Load unpacked"** and select the project folder
 
----
+
 ---
 
 ## 🧪 Limitations
 
-- Only detects email addresses visible in page text
-- Cannot auto-fill or submit contact forms (yet)
-- Google Search fallback is manual
+- Detects only email addresses that are visible in the page text (does not parse hidden or dynamic content).
+- Depends on the internal GDPR email database, which is continuously updated — but may not cover all websites.
+- Google Search fallback is manual: the user is redirected to a search query if no address is found.
+- Users must manually add missing addresses to their personal database if neither the page nor the global database includes them.
 
 ---
 
