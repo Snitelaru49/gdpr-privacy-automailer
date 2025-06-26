@@ -2,8 +2,7 @@
 
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-A cross-browser extension (Chrome, Firefox, Edge, Brave, Opera) that helps users quickly send GDPR data deletion requests by detecting privacy-related email addresses on the current site, offering automated templates, and even searching intelligently when no address is found.
-
+A browser extension that helps you instantly find privacy-related email addresses on any website and send GDPR data deletion requests with a single click. Works on Chrome, Firefox, Edge, Brave, and Opera.
 ---
 
 ## ✨ Features
