@@ -253,18 +253,24 @@ function showStatus(message, type) {
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
-function generateGDPRTemplate(userEmail, siteUrl) {
-  const domain = new URL(siteUrl).hostname;
-  return `Subject: GDPR Data Deletion Request - Article 17
+const templateModal = document.getElementById('templateModal');
+const templateTextarea = document.getElementById('templateTextarea');
+const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+const cancelTemplateBtn = document.getElementById('cancelTemplateBtn');
+
+editTemplateBtn.addEventListener('click', function() {
+  chrome.storage.local.get(['gdprTemplate'], function(result) {
+    const currentTemplate = result.gdprTemplate || 
+`Subject: GDPR Data Deletion Request - Article 17
 
 Dear Data Protection Officer,
 
 I am writing to formally request the deletion of my personal data under Article 17 (Right to erasure) of the General Data Protection Regulation (GDPR).
 
 Personal Details:
-- Email: ${userEmail}
-- Website: ${domain}
-- Date of Request: ${new Date().toLocaleDateString()}
+- Email: {{email}}
+- Website: {{domain}}
+- Date of Request: {{date}}
 
 I request that you:
 1. Delete all personal data you hold about me
@@ -279,8 +285,68 @@ Thank you for your prompt attention to this matter.
 
 Best regards,
 [Your Name]
-
 `;
+    templateTextarea.value = currentTemplate;
+    templateModal.style.display = 'flex';
+  });
+});
+
+saveTemplateBtn.addEventListener('click', function() {
+  const newTemplate = templateTextarea.value;
+  chrome.storage.local.set({ gdprTemplate: newTemplate }, function() {
+    showStatus('Template updated!', 'success');
+    templateModal.style.display = 'none';
+  });
+});
+
+cancelTemplateBtn.addEventListener('click', function() {
+  templateModal.style.display = 'none';
+});
+
+async function generateGDPRTemplate(userEmail, siteUrl) {
+  const domain = new URL(siteUrl).hostname;
+  const date = new Date().toLocaleDateString();
+  let template = `Subject: GDPR Data Deletion Request - Article 17
+
+Dear Data Protection Officer,
+
+I am writing to formally request the deletion of my personal data under Article 17 (Right to erasure) of the General Data Protection Regulation (GDPR).
+
+Personal Details:
+- Email: {{email}}
+- Website: {{domain}}
+- Date of Request: {{date}}
+
+I request that you:
+1. Delete all personal data you hold about me
+2. Confirm in writing that this has been done
+3. Inform any third parties with whom you have shared my data
+
+I expect a response within 30 days as required by GDPR Article 12.
+
+If you need additional information to locate my records, please contact me at this email address.
+
+Thank you for your prompt attention to this matter.
+
+Best regards,
+[Your Name]
+`;
+
+  // Always try to get the custom template from storage
+  return new Promise(resolve => {
+    chrome.storage.local.get(['gdprTemplate'], function(result) {
+      if (result.gdprTemplate) {
+        template = result.gdprTemplate;
+      }
+      // Replace placeholders
+      resolve(
+        template
+          .replace(/{{email}}/g, userEmail)
+          .replace(/{{domain}}/g, domain)
+          .replace(/{{date}}/g, date)
+      );
+    });
+  });
 }
 // Content script to find privacy-related emails on the current page
 function findPrivacyEmails() {

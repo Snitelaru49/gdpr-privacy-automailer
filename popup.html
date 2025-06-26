@@ -48,6 +48,8 @@
     .btn-danger:hover { background: #b71c1c; }
     .btn-orange { background: #ff9800; }
     .btn-orange:hover { background: #f57c00; }
+    .btn-indigo { background: #3f51b5; }
+    .btn-indigo:hover { background: #283593; }
     .status { padding: 8px; border-radius: 4px; margin-top: 8px; display: none; }
     .success { background: #d4edda; color: #155724; }
     .error { background: #f8d7da; color: #721c24; }
@@ -116,6 +118,8 @@
       .btn-danger:hover { background: #b71c1c; }
       .btn-orange { background: #ffa726; }
       .btn-orange:hover { background: #f57c00; }
+      .btn-indigo { background: #5c6bc0; }
+      .btn-indigo:hover { background: #283593; }
       .status.success { background: #27472f; color: #b9f6ca; }
       .status.error { background: #5c1a1b; color: #ffbdbd; }
       .status.info { background: #1a2634; color: #b3e5fc; }
@@ -132,6 +136,94 @@
       }
       hr { border-top: 1px solid #333; }
     }
+
+    /* Modal Overlay and Content for Light/Dark Mode */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay[style*="display: block"], .modal-overlay[style*="display:block"] {
+      display: flex !important;
+    }
+    .modal-content {
+      background: #fff;
+      color: #222;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90vw;
+      box-shadow: 0 2px 16px #0004;
+      border: 1px solid #eee;
+      transition: background 0.2s, color 0.2s;
+    }
+    #templateTextarea {
+      width: 100%;
+      height: 220px;
+      resize: vertical;
+      background: #f8f9fa;
+      color: #222;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 1em;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+    }
+    .modal-instructions {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 8px;
+    }
+    @media (prefers-color-scheme: dark) {
+      .modal-overlay {
+        background: rgba(0,0,0,0.75);
+      }
+      .modal-content {
+        background: #23272a;
+        color: #f1f3f4;
+        border: 1px solid #333;
+        box-shadow: 0 2px 16px #000a;
+      }
+      #templateTextarea {
+        background: #181a1b;
+        color: #f1f3f4;
+        border: 1px solid #444;
+      }
+      .modal-instructions {
+        color: #b0b0b0;
+      }
+    }
+
+    /* Modal dialog dark mode support */
+    @media (prefers-color-scheme: dark) {
+      #templateModal > div {
+        background: #23272a !important;
+        color: #f1f3f4 !important;
+        box-shadow: 0 2px 16px #000a;
+      }
+      #templateModal textarea {
+        background: #181a1b !important;
+        color: #f1f3f4 !important;
+        border: 1px solid #555 !important;
+      }
+      #templateModal textarea::placeholder {
+        color: #b0b0b0 !important;
+        opacity: 1;
+      }
+      #templateModal {
+        background: #000c !important;
+      }
+      #templateModal h4 {
+        color: #fff !important;
+      }
+      #templateModal div[style*="color:#666"] {
+        color: #b0b0b0 !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -145,7 +237,8 @@
   <button id="findEmailBtn" class="btn btn-primary">🔍 Find Privacy Email On This Page</button>
   <button id="dbSearchBtn" class="btn btn-teal">🔎 Search in Known Database</button>
   <button id="googleSearchBtn" class="btn btn-orange">🔎 Google Search Emails</button>
-  <button id="settingsBtn" class="btn btn-secondary">⚙️ Settings</button>
+  <button id="settingsBtn" class="btn btn-indigo">📒 Personal Database</button>
+  <button id="editTemplateBtn" class="btn btn-secondary">✏️ Edit GDPR Template</button>
   <hr style="margin: 16px 0 10px 0; border: none; border-top: 1px solid #eee;">
   <div class="custom-email-block" style="margin-top: 18px;">
     <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 6px;">
@@ -163,6 +256,22 @@
   </div>
   <div id="status" class="status" style="min-height: 32px;"></div>
   <div id="emailList" style="margin-top:12px;"></div>
+
+  <!-- GDPR Template Modal -->
+  <div id="templateModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h4>Edit GDPR Request Template</h4>
+      <textarea id="templateTextarea"></textarea>
+      <div style="margin-top:10px; text-align:right;">
+        <button id="saveTemplateBtn" class="btn btn-green">Save</button>
+        <button id="cancelTemplateBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+      <div class="modal-instructions">
+        Use <code>{{email}}</code>, <code>{{domain}}</code>, and <code>{{date}}</code> as placeholders.
+      </div>
+    </div>
+  </div>
+  <!-- End GDPR Template Modal -->
   <script src="src/popup.js"></script>
 </body>
 </html>
