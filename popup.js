@@ -52,7 +52,49 @@ findEmailBtn.addEventListener('click', async function() {
     showStatus('Error: ' + error.message, 'error');
   }
 });
-
+const googleSearchBtn = document.getElementById('googleSearchBtn');
+googleSearchBtn.addEventListener('click', async function() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const domain = new URL(tab.url).hostname.replace(/^www\./, '');
+  const query = `site:${domain} (email OR contact OR privacy)`;
+  const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+  window.open(googleUrl, '_blank');
+});
+let knownEmails = {};
+fetch('emails.json')
+  .then(response => response.json())
+  .then(data => { knownEmails = data; });
+const dbSearchBtn = document.getElementById('dbSearchBtn');
+dbSearchBtn.addEventListener('click', async function() {
+  const userEmail = userEmailInput.value;
+  const emailListDiv = document.getElementById('emailList');
+  emailListDiv.innerHTML = '';
+  if (!userEmail || !isValidEmail(userEmail)) {
+    showStatus('Please enter a valid email address', 'error');
+    return;
+  }
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const domain = new URL(tab.url).hostname.replace(/^www\./, '');
+  const email = knownEmails[domain];
+  if (email) {
+    showStatus(`Found known privacy email for ${domain}:`, 'success');
+    const ul = document.createElement('ul');
+    const li = document.createElement('li');
+    li.style.cursor = 'pointer';
+    li.style.color = '#fbbc05';
+    li.textContent = email;
+    li.onclick = function() {
+      const subject = 'GDPR Data Deletion Request - Article 17';
+      const body = generateGDPRTemplate(userEmail, tab.url);
+      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(mailtoLink);
+    };
+    ul.appendChild(li);
+    emailListDiv.appendChild(ul);
+  } else {
+    showStatus('No known privacy email found in database for this site.', 'error');
+  }
+});
   function showStatus(message, type) {
     statusDiv.textContent = message;
     statusDiv.className = `status ${type}`;
