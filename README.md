@@ -88,8 +88,7 @@ This extension has been tested and works properly on:
 
 ## 👤 Author
 
-**Mihai** – Built for Round 2 of the AlgoArena Hackathon (2025).  
-Feel free to open issues or contribute via pull requests.
+**Mihai** 
 
 
 
