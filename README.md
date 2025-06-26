@@ -54,7 +54,7 @@ This extension has been tested and works properly on:
 1. Go to `about:debugging#/runtime/this-firefox`
 2. Click **"Load Temporary Add-on"**
 3. Select any file from the project folder (e.g., `manifest.json`)
-> Note: For permanent installation, package and upload to [addons.mozilla.org](https://addons.mozilla.org/)
+
 
 ---
 
@@ -92,32 +92,7 @@ This extension has been tested and works properly on:
 **Mihai** – Built for Round 2 of the AlgoArena Hackathon (2025).  
 Feel free to open issues or contribute via pull requests.
 
----
 
-## 📜 License
 
-MIT License
 
-Copyright (c) 2025 Mihai
 
-Permission is hereby granted, free of charge, to any person obtaining a copy  
-of this software and associated documentation files (the “Software”), to deal  
-in the Software without restriction, including without limitation the rights to  
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of  
-the Software, and to permit persons to whom the Software is furnished to do so,  
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all  
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR  
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,  
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE  
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,  
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN  
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-<<<<<<< HEAD
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-=======
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
->>>>>>> 76bc2f5fce58a9456fffaae7a76d80e3249de921
