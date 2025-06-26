@@ -2,13 +2,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const userEmailInput = document.getElementById('userEmail');
   const findEmailBtn = document.getElementById('findEmailBtn');
   const statusDiv = document.getElementById('status');
-
+const addCustomEmailBtn = document.getElementById('addCustomEmailBtn');
+const removeCustomEmailBtn = document.getElementById('removeCustomEmailBtn');
+const customEmailInput = document.getElementById('customEmail');
+const suggestGlobal = document.getElementById('suggestGlobal');
   chrome.storage.local.get(['userEmail'], function(result) {
     if (result.userEmail) {
       userEmailInput.value = result.userEmail;
     }
   });
-
+  chrome.storage.local.get(['customEmails'], console.log);
   userEmailInput.addEventListener('input', function() {
     chrome.storage.local.set({ userEmail: userEmailInput.value });
   });
@@ -65,6 +68,21 @@ fetch('emails.json')
   .then(response => response.json())
   .then(data => { knownEmails = data; });
 const dbSearchBtn = document.getElementById('dbSearchBtn');
+const settingsBtn = document.getElementById('settingsBtn');
+settingsBtn.addEventListener('click', function() {
+  chrome.storage.local.get(['customEmails'], function(result) {
+    const customEmails = result.customEmails || {};
+    if (Object.keys(customEmails).length === 0) {
+      alert('No personal emails saved.');
+    } else {
+      let msg = 'Your personal privacy emails:\n\n';
+      for (const [domain, email] of Object.entries(customEmails)) {
+        msg += `${domain}: ${email}\n`;
+      }
+      alert(msg);
+    }
+  });
+});
 dbSearchBtn.addEventListener('click', async function() {
   const userEmail = userEmailInput.value;
   const emailListDiv = document.getElementById('emailList');
@@ -75,26 +93,111 @@ dbSearchBtn.addEventListener('click', async function() {
   }
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const domain = new URL(tab.url).hostname.replace(/^www\./, '');
-  const email = knownEmails[domain];
-  if (email) {
-    showStatus(`Found known privacy email for ${domain}:`, 'success');
+
+  chrome.storage.local.get(['customEmails'], function(result) {
+    const customEmails = result.customEmails || {};
+    const personalEmail = customEmails[domain];
+    // Support for knownEmails as object or as country->domain mapping
+    let dbEmails = [];
+    if (knownEmails[domain]) {
+      dbEmails.push(knownEmails[domain]);
+    } else {
+      // If knownEmails is a country->domain mapping
+      for (const country in knownEmails) {
+        if (knownEmails[country] && knownEmails[country][domain]) {
+          dbEmails.push(knownEmails[country][domain]);
+        }
+      }
+    }
+    // Remove duplicates and personal email if already in dbEmails
+    dbEmails = dbEmails.filter(e => e && e !== personalEmail);
+
+    if (!personalEmail && dbEmails.length === 0) {
+      showStatus('No privacy email found in personal or global database for this site.', 'error');
+      return;
+    }
+
+    showStatus('Privacy emails found for this site:', 'success');
     const ul = document.createElement('ul');
-    const li = document.createElement('li');
-    li.style.cursor = 'pointer';
-    li.style.color = '#fbbc05';
-    li.textContent = email;
-    li.onclick = function() {
-      const subject = 'GDPR Data Deletion Request - Article 17';
-      const body = generateGDPRTemplate(userEmail, tab.url);
-      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.open(mailtoLink);
-    };
-    ul.appendChild(li);
+    if (personalEmail) {
+      const li = document.createElement('li');
+      li.style.cursor = 'pointer';
+      li.style.color = '#34a853'; // green for personal
+      li.textContent = personalEmail + ' (personal)';
+      li.onclick = function() {
+        const subject = 'GDPR Data Deletion Request - Article 17';
+        const body = generateGDPRTemplate(userEmail, tab.url);
+        const mailtoLink = `mailto:${personalEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(mailtoLink);
+      };
+      ul.appendChild(li);
+    }
+    dbEmails.forEach(email => {
+      const li = document.createElement('li');
+      li.style.cursor = 'pointer';
+      li.style.color = '#fbbc05'; // yellow for global
+      li.textContent = email + ' (database)';
+      li.onclick = function() {
+        const subject = 'GDPR Data Deletion Request - Article 17';
+        const body = generateGDPRTemplate(userEmail, tab.url);
+        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(mailtoLink);
+      };
+      ul.appendChild(li);
+    });
     emailListDiv.appendChild(ul);
-  } else {
-    showStatus('No known privacy email found in database for this site.', 'error');
+  });
+});
+addCustomEmailBtn.addEventListener('click', async function() {
+  const customEmail = customEmailInput.value.trim();
+  if (!isValidEmail(customEmail)) {
+    showStatus('Invalid email address.', 'error');
+    return;
+  }
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const domain = new URL(tab.url).hostname.replace(/^www\./, '');
+
+  // Save to personal DB
+  chrome.storage.local.get(['customEmails'], function(result) {
+    const customEmails = result.customEmails || {};
+    customEmails[domain] = customEmail;
+    chrome.storage.local.set({ customEmails }, function() {
+      showStatus('Email saved for this domain.', 'success');
+    });
+  });
+
+  // Suggest for global DB
+  if (suggestGlobal.checked) {
+    // Example: open a GitHub issue or Google Form
+    const suggestionUrl = `https://github.com/yourrepo/issues/new?title=Suggest+privacy+email+for+${domain}&body=${encodeURIComponent(customEmail)}`;
+    window.open(suggestionUrl, '_blank');
   }
 });
+removeCustomEmailBtn.addEventListener('click', async function() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const domain = new URL(tab.url).hostname.replace(/^www\./, '');
+  chrome.storage.local.get(['customEmails'], function(result) {
+    const customEmails = result.customEmails || {};
+    if (customEmails[domain]) {
+      delete customEmails[domain];
+      chrome.storage.local.set({ customEmails }, function() {
+        showStatus('Custom email removed for this domain.', 'success');
+      });
+    } else {
+      showStatus('No custom email to remove for this domain.', 'error');
+    }
+  });
+});
+
+// When searching for an email, check personal DB first
+async function getEmailForDomain(domain) {
+  return new Promise(resolve => {
+    chrome.storage.local.get(['customEmails'], function(result) {
+      const customEmails = result.customEmails || {};
+      resolve(customEmails[domain] || knownEmails[domain]);
+    });
+  });
+}
   function showStatus(message, type) {
     statusDiv.textContent = message;
     statusDiv.className = `status ${type}`;
