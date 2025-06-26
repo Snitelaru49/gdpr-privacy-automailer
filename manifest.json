@@ -8,15 +8,15 @@
     "storage"
   ],
   "action": {
-    "default_popup": "popup.html",
-    "default_title": "GDPR Auto Mailer"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ],
+  "default_popup": "popup.html",
+  "default_title": "GDPR Auto Mailer"
+},
+"content_scripts": [
+  {
+    "matches": ["<all_urls>"],
+    "js": ["src/content.js"]
+  }
+],
 "icons": {
   "16": "icons/icon16.png",
   "48": "icons/icon48.png",
