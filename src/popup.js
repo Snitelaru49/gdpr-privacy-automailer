@@ -74,6 +74,16 @@ findEmailBtn.addEventListener('click', async function() {
                   showStatus('Email added to your personal database.', 'success');
                 });
               });
+
+              // Suggest for global DB if checked
+              if (suggestGlobal && suggestGlobal.checked) {
+                showStatus('Opening suggestion form...', 'loading');
+                const suggestionUrl = `https://github.com/Snitelaru49/gdpr-privacy-automailer/issues/new?title=Suggest+privacy+email+for+${domain}&body=${encodeURIComponent(email)}`;
+                setTimeout(() => {
+                  window.open(suggestionUrl, '_blank');
+                  showStatus('Suggestion form opened.', 'info');
+                }, 500);
+              }
             };
             li.appendChild(addBtn);
           }
