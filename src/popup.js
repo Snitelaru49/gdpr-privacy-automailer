@@ -43,9 +43,16 @@ findEmailBtn.addEventListener('click', async function() {
         const customEmails = result.customEmails || {};
         emails.forEach(email => {
           const li = document.createElement('li');
-          li.style.cursor = 'pointer';
-          li.style.color = '#4285f4';
-          li.textContent = email;
+          li.style.display = 'flex';
+          li.style.alignItems = 'center';
+          li.style.justifyContent = 'center';
+          li.style.gap = '10px';
+
+          const emailSpan = document.createElement('span');
+          emailSpan.style.cursor = 'pointer';
+          emailSpan.style.color = '#4285f4';
+          emailSpan.textContent = email;
+          li.appendChild(emailSpan);
 
           // Check if email is in knownEmails or customEmails
           const isInGlobal = Object.values(knownEmails).includes(email);
@@ -56,7 +63,6 @@ findEmailBtn.addEventListener('click', async function() {
             const addBtn = document.createElement('button');
             addBtn.textContent = 'Add to My Emails';
             addBtn.className = 'btn btn-green';
-            addBtn.style.marginLeft = '8px';
             addBtn.onclick = function(e) {
               e.stopPropagation();
               // Save to personal DB for this domain
@@ -74,9 +80,11 @@ findEmailBtn.addEventListener('click', async function() {
 
           li.onclick = function() {
             const subject = 'GDPR Data Deletion Request - Article 17';
-            const body = generateGDPRTemplate(userEmail, tab.url);
-            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.open(mailtoLink);
+            const bodyPromise = generateGDPRTemplate(userEmail, tab.url);
+            bodyPromise.then(body => {
+              const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+              window.open(mailtoLink);
+            });
           };
           ul.appendChild(li);
         });
