@@ -1,5 +1,7 @@
 # GDPR Auto Mailer – Chrome Extension
 
+[![Watch the video](https://img.youtube.com/vi/ER-8mnF89Cs/maxresdefault.jpg)](https://youtu.be/ER-8mnF89Cs)
+
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 A browser extension that helps you instantly find privacy-related email addresses on any website and send GDPR data deletion requests with a single click. Works on Chrome, Firefox, Edge, Brave, and Opera.
@@ -88,10 +90,4 @@ This extension has been tested and works properly on:
 
 ## 👤 Author
 
-**Mihai** 
-
-
-
-
-
-
+**Mihai**
